@@ -9,6 +9,11 @@ public class ResultManager : MonoBehaviour
     [SerializeField] TMP_Text scoreText;
     [SerializeField] TMP_Text timeText;
 
+    void Start()
+    {
+        ShowResult(100,60f);
+    }
+
     public void ShowResult(int score, float time)
     {
         resultPanel.SetActive(true);
@@ -17,7 +22,7 @@ public class ResultManager : MonoBehaviour
         timeText.text = "Time: " + time.ToString("F2") + "s";
 
         // ゲームを止めたい場合
-        Time.timeScale = 0f;
+        //Time.timeScale = 0f;
     }
 
     public void OnRetryButton()
