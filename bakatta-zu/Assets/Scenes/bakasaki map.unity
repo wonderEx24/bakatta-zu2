@@ -20106,6 +20106,11 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 3668063200505593058, guid: 8904f1216a6a1854592f3e7f4bf68c9a, type: 3}
+--- !u!4 &771134165 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -585407558126863456, guid: 01c5b533d12d1449ba8e27b9c29b3a22, type: 3}
+  m_PrefabInstance: {fileID: 737869261}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &771940457 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -3372845363793166956, guid: 8904f1216a6a1854592f3e7f4bf68c9a, type: 3}
@@ -25058,6 +25063,7 @@ MonoBehaviour:
   rotationSpeed: 5
   verticalAngleLimit: 80
   cameraOffset: {x: 0, y: 2, z: -5}
+  isUIOpen: 0
 --- !u!1 &963677970 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 110814, guid: ea8ec36c7f9b40f4faa40bf80afec5a3, type: 3}
@@ -54335,6 +54341,8 @@ MonoBehaviour:
   imagePreview: {fileID: 372146966}
   postManager: {fileID: 2078724483}
   shower: {fileID: 2073595888}
+  cameraMove: {fileID: 963194229}
+  playerMove: {fileID: 8989530708725429934}
 --- !u!4 &2073595887
 Transform:
   m_ObjectHideFlags: 0
@@ -58058,7 +58066,7 @@ MonoBehaviour:
   jumpPower: 2
   mouseSensitivity: 2
   keyMovementSpeed: 0.1
-  oden: {fileID: 0}
+  oden: {fileID: 771134165}
   interactDistance: 2
 --- !u!64 &9096769732088503261
 MeshCollider:

@@ -2,7 +2,8 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class PostUI : MonoBehaviour {
+public class PostUI : MonoBehaviour
+{
     public GameObject postUI;
     public GameObject showBtns;
     public TMP_InputField userNameInput;
@@ -10,14 +11,23 @@ public class PostUI : MonoBehaviour {
     public Image imagePreview;
     public PostManager postManager;
     public kakunin shower;
-    private Sprite selectedImage; // 選択した画像
+
+    // カメラ制御用
+    public cameramove cameraMove;
+
+    // プレイヤー移動制御用
+    public Move playerMove;
+
+    private Sprite selectedImage;
 
     // 投稿ボタンを押した時
-    public void OnSubmitPost() {
+    public void OnSubmitPost()
+    {
         string userName = userNameInput.text;
         string message = messageInput.text;
 
-        if (string.IsNullOrEmpty(message)) {
+        if (string.IsNullOrEmpty(message))
+        {
             Debug.Log("メッセージが空です！");
             return;
         }
@@ -31,23 +41,48 @@ public class PostUI : MonoBehaviour {
         selectedImage = null;
     }
 
-    // 仮：画像選択（スクショやリソースから選ぶ処理を後で追加）
-    public void OnSelectImage(Sprite sprite) {
+    // 画像選択
+    public void OnSelectImage(Sprite sprite)
+    {
         selectedImage = sprite;
         imagePreview.sprite = sprite;
     }
-    // 投稿画面を表示する(更新もここで行う)
+
+    // 投稿画面を表示
     public void ShowPostUI()
     {
         postUI.SetActive(true);
+        showBtns.SetActive(false);
+
         OnSelectImage(null);
         shower.showAllPicture();
-        showBtns.SetActive(false);
+
+        // ★ カメラ停止
+        if (cameraMove != null)
+            cameraMove.enabled = false;
+
+        // ★ プレイヤー停止
+        if (playerMove != null)
+            playerMove.enabled = false;
+
+        // ★ マウスを解放
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
+
     // 投稿画面を隠す
     public void HidePostUI()
     {
         showBtns.SetActive(true);
         postUI.SetActive(false);
+
+        if (cameraMove != null)
+            cameraMove.enabled = true;
+
+        if (playerMove != null)
+            playerMove.enabled = true;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }
