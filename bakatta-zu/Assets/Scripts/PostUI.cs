@@ -1,26 +1,31 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections;
 
 public class PostUI : MonoBehaviour
 {
+    [Header("UI")]
     public GameObject postUI;
     public GameObject showBtns;
+
     public TMP_InputField userNameInput;
     public TMP_InputField messageInput;
     public Image imagePreview;
+
+    [Header("管理")]
     public PostManager postManager;
     public kakunin shower;
 
-    // カメラ制御用
+    [Header("操作制御")]
     public cameramove cameraMove;
-
-    // プレイヤー移動制御用
     public Move playerMove;
 
     private Sprite selectedImage;
 
-    // 投稿ボタンを押した時
+    // =========================
+    // 投稿処理
+    // =========================
     public void OnSubmitPost()
     {
         string userName = userNameInput.text;
@@ -34,21 +39,20 @@ public class PostUI : MonoBehaviour
 
         postManager.CreatePost(userName, message, selectedImage);
 
-        // 入力欄をクリア
         userNameInput.text = "";
         messageInput.text = "";
-        imagePreview.sprite = null;
-        selectedImage = null;
+        OnSelectImage(null);
     }
 
-    // 画像選択
     public void OnSelectImage(Sprite sprite)
     {
         selectedImage = sprite;
         imagePreview.sprite = sprite;
     }
 
-    // 投稿画面を表示
+    // =========================
+    // UI表示
+    // =========================
     public void ShowPostUI()
     {
         postUI.SetActive(true);
@@ -57,32 +61,41 @@ public class PostUI : MonoBehaviour
         OnSelectImage(null);
         shower.showAllPicture();
 
-        // ★ カメラ停止
-        if (cameraMove != null)
-            cameraMove.enabled = false;
+        DisableControl();
+    }
 
-        // ★ プレイヤー停止
-        if (playerMove != null)
-            playerMove.enabled = false;
+    public void HidePostUI()
+    {
+        postUI.SetActive(false);
+        showBtns.SetActive(true);
 
-        // ★ マウスを解放
+        StartCoroutine(EnableControlNextFrame());
+    }
+
+    // =========================
+    // 操作制御
+    // =========================
+    private void DisableControl()
+    {
+        if (cameraMove != null) cameraMove.enabled = false;
+        if (playerMove != null) playerMove.enabled = false;
+
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
 
-    // 投稿画面を隠す
-    public void HidePostUI()
+    private void EnableControl()
     {
-        showBtns.SetActive(true);
-        postUI.SetActive(false);
+        if (cameraMove != null) cameraMove.enabled = true;
+        if (playerMove != null) playerMove.enabled = true;
 
-        if (cameraMove != null)
-            cameraMove.enabled = true;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
 
-        if (playerMove != null)
-            playerMove.enabled = true;
-
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+    private IEnumerator EnableControlNextFrame()
+    {
+        yield return null;
+        EnableControl();
     }
 }

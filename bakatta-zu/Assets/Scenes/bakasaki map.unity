@@ -54601,6 +54601,8 @@ MonoBehaviour:
   showBtns: {fileID: 524538092}
   contentParent: {fileID: 1681143288}
   postPrefab: {fileID: 5100257022486317826, guid: 6d29a3d97af941c4cb314bd4afb4959c, type: 3}
+  cameraMove: {fileID: 963194229}
+  playerMove: {fileID: 8989530708725429934}
 --- !u!4 &2078724484
 Transform:
   m_ObjectHideFlags: 0
