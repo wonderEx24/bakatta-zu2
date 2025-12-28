@@ -80,8 +80,7 @@ public class PostUI : MonoBehaviour
         if (cameraMove != null) cameraMove.enabled = false;
         if (playerMove != null) playerMove.enabled = false;
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        CursorManager.Instance.LockForUI();
     }
 
     private void EnableControl()
@@ -89,8 +88,7 @@ public class PostUI : MonoBehaviour
         if (cameraMove != null) cameraMove.enabled = true;
         if (playerMove != null) playerMove.enabled = true;
 
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        CursorManager.Instance.Restore();
     }
 
     private IEnumerator EnableControlNextFrame()
