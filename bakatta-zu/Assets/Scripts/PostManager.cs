@@ -1,64 +1,113 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
 
-// 生成AIとはいえ、よく出来てる！！！手直しの必要なくてすごく助かる！！
 [System.Serializable]
-public class Post {
+public class Post
+{
     public string userName;
     public string message;
     public Sprite image;
     public System.DateTime time;
 }
 
-public class PostManager : MonoBehaviour {
+public class PostManager : MonoBehaviour
+{
+    [Header("UI")]
     public GameObject timeLine;
     public GameObject showBtns;
-    public Transform contentParent; // ScrollViewのContent
-    public GameObject postPrefab;   // 投稿カードのPrefab
+    public Transform contentParent;
+    public GameObject postPrefab;
+
+    [Header("操作制御")]
+    public cameramove cameraMove;
+    public Move playerMove;
+
     private List<Post> posts = new List<Post>();
 
-    public void CreatePost(string userName, string message, Sprite image = null) {
-        Post newPost = new Post {
+    // =========================
+    // 投稿作成
+    // =========================
+    public void CreatePost(string userName, string message, Sprite image = null)
+    {
+        posts.Insert(0, new Post
+        {
             userName = userName,
             message = message,
             image = image,
             time = System.DateTime.Now
-        };
-
-        posts.Insert(0, newPost); // 上に追加
-        // UpdateTimeline(); // エディタの任意タイミングで実行したいので不要
+        });
     }
 
-    void UpdateTimeline() {
-        foreach (Transform child in contentParent) {
+    private void UpdateTimeline()
+    {
+        foreach (Transform child in contentParent)
             Destroy(child.gameObject);
-        }
-        foreach (var post in posts) {
+
+        foreach (var post in posts)
+        {
             GameObject obj = Instantiate(postPrefab, contentParent);
-            obj.transform.Find("UserName").GetComponent<TextMeshProUGUI>().text = post.userName;
-            obj.transform.Find("Message").GetComponent<TextMeshProUGUI>().text = post.message;
-            obj.transform.Find("Time").GetComponent<TextMeshProUGUI>().text = "Posted at: " + post.time.ToString();
-            if (post.image != null) {
-                obj.transform.Find("Image").GetComponent<Image>().sprite = post.image;
-            } else {
-                obj.transform.Find("Image").gameObject.SetActive(false);
-            }
+
+            obj.transform.Find("UserName")
+                .GetComponent<TextMeshProUGUI>().text = post.userName;
+
+            obj.transform.Find("Message")
+                .GetComponent<TextMeshProUGUI>().text = post.message;
+
+            obj.transform.Find("Time")
+                .GetComponent<TextMeshProUGUI>().text =
+                    post.time.ToString("yyyy/MM/dd HH:mm");
+
+            Image img = obj.transform.Find("Image").GetComponent<Image>();
+            img.gameObject.SetActive(post.image != null);
+            if (post.image != null) img.sprite = post.image;
         }
     }
-    // タイムラインを表示する(更新もここで行う)
+
+    // =========================
+    // UI表示
+    // =========================
     public void ShowTimeline()
     {
         timeLine.SetActive(true);
-        UpdateTimeline();
         showBtns.SetActive(false);
+
+        UpdateTimeline();
+        DisableControl();
     }
-    // タイムラインを隠す
-    public void HideTimeLine()
+
+    public void HideTimeline()
     {
-        showBtns.SetActive(true);
         timeLine.SetActive(false);
+        showBtns.SetActive(true);
+
+        StartCoroutine(EnableControlNextFrame());
+    }
+
+    // =========================
+    // 操作制御
+    // =========================
+    private void DisableControl()
+    {
+        if (cameraMove != null) cameraMove.enabled = false;
+        if (playerMove != null) playerMove.enabled = false;
+
+        CursorManager.Instance.LockForUI();
+    }
+
+    private void EnableControl()
+    {
+        if (cameraMove != null) cameraMove.enabled = true;
+        if (playerMove != null) playerMove.enabled = true;
+
+        CursorManager.Instance.Restore();
+    }
+
+    private IEnumerator EnableControlNextFrame()
+    {
+        yield return null;
+        EnableControl();
     }
 }
-
