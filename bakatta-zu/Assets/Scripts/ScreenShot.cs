@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace ScreenshotUtility
 {
+    // =====================
+    // ENUM 定義
+    // =====================
     public enum TIME_STAMP
     {
         MMDDHHMMSS,
@@ -32,15 +35,16 @@ namespace ScreenshotUtility
         CustomSize
     }
 
+    // =====================
+    // SCREENSHOT CLASS
+    // =====================
     public class ScreenShot : MonoBehaviour
     {
-#if UNITY_EDITOR
         [SerializeField] Camera _UseCamera;
         [SerializeField] SCREEN_SIZE_PIXEL _screenSizePixel = SCREEN_SIZE_PIXEL.p1024x1024;
         [SerializeField] Vector2Int _customSize = new Vector2Int(1024, 1024);
         [SerializeField] BACK_GROUND_COLOR _buckGroundColorType = BACK_GROUND_COLOR.Alpha;
         [SerializeField] Color _customColor = Color.green;
-        [SerializeField] TIME_STAMP _timeStampStyle = TIME_STAMP.MMDDHHMMSS;
         [SerializeField] string _screenShotsTitle = "img";
         [SerializeField] string _screenShotFolderName = "ScreenShots";
         public KeyCode _screenShotsKeybinding = KeyCode.F1;
@@ -50,175 +54,113 @@ namespace ScreenshotUtility
         {
             if (Input.GetKeyDown(_screenShotsKeybinding))
             {
-                getScreenShots();
+                GetScreenShots();
             }
         }
 
-        private bool NullCheck()
+        public void GetScreenShots()
         {
-            bool isNull = false;
             if (_UseCamera == null)
             {
-                Debug.LogWarning("画像の書き出しに使用するカメラを ScreenSchotCamera に割り当ててください");
-                isNull = true;
+                Debug.LogWarning("Camera が設定されていません");
+                return;
             }
-            if (string.IsNullOrEmpty(_screenShotsTitle))
-            {
-                Debug.LogWarning("ScreenShotsTitle に画像ファイルに付ける末尾の文字を入力してください");
-                isNull = true;
-            }
-            if (string.IsNullOrEmpty(_screenShotFolderName))
-            {
-                Debug.LogWarning("ScreenShotFolderName にScreenShotの保存先のフォルダ名を入力してください");
-                isNull = true;
-            }
-            return isNull;
+
+            string path = Path.Combine(
+                Application.persistentDataPath,
+                _screenShotFolderName
+            );
+
+            StartCoroutine(ImageShooting(path, _screenShotsTitle));
         }
 
-        [ContextMenu("スクリーンショットを撮影する")]
-        public void getScreenShots()
-        {
-            if (NullCheck()) { return; }
-
-            string path = Application.dataPath + "/Resources/" + _screenShotFolderName + "/";
-            StartCoroutine(imageShooting(path, _screenShotsTitle));
-        }
-
-        private IEnumerator imageShooting(string path, string title)
+        private IEnumerator ImageShooting(string path, string title)
         {
             yield return new WaitForEndOfFrame();
 
-            imagePathCheck(path);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
 
-            // ここで連番ファイル名を決定する
             string fileName = GetNextFileName(path, title, ".png");
 
-            // 元の背景色を保持
-            Color32 CacheColor = _UseCamera.backgroundColor;
+            Color cacheColor = _UseCamera.backgroundColor;
+
+            _UseCamera.clearFlags =
+                _buckGroundColorType == BACK_GROUND_COLOR.Skybox
+                ? CameraClearFlags.Skybox
+                : CameraClearFlags.SolidColor;
 
             if (_buckGroundColorType == BACK_GROUND_COLOR.Alpha)
-            {
-                _UseCamera.backgroundColor = new Color32(0, 0, 0, 0);
-                _UseCamera.GetComponent<Camera>().clearFlags = CameraClearFlags.SolidColor;
-            }
+                _UseCamera.backgroundColor = new Color(0, 0, 0, 0);
             else if (_buckGroundColorType == BACK_GROUND_COLOR.CustomColor)
-            {
                 _UseCamera.backgroundColor = _customColor;
-                _UseCamera.GetComponent<Camera>().clearFlags = CameraClearFlags.SolidColor;
-            }
-            else if (_buckGroundColorType == BACK_GROUND_COLOR.Skybox)
-            {
-                _UseCamera.GetComponent<Camera>().clearFlags = CameraClearFlags.Skybox;
-            }
 
-            Vector2Int size = getScreenSizePixel2Int(_screenSizePixel);
-            Texture2D screenShot = new Texture2D(size.x, size.y, TextureFormat.ARGB32, false);
-            RenderTexture rt = new RenderTexture(screenShot.width, screenShot.height, 32);
-            RenderTexture prev = _UseCamera.targetTexture;
+            Vector2Int size = GetScreenSizePixel2Int(_screenSizePixel);
+
+            RenderTexture rt = new RenderTexture(size.x, size.y, 32);
+            Texture2D tex = new Texture2D(size.x, size.y, TextureFormat.ARGB32, false);
+
             _UseCamera.targetTexture = rt;
             _UseCamera.Render();
-            _UseCamera.targetTexture = prev;
-            RenderTexture.active = rt;
-            screenShot.ReadPixels(new Rect(0, 0, screenShot.width, screenShot.height), 0, 0);
-            screenShot.Apply();
-            byte[] bytes = screenShot.EncodeToPNG();
 
-            File.WriteAllBytes(path + fileName, bytes);
+            RenderTexture.active = rt;
+            tex.ReadPixels(new Rect(0, 0, size.x, size.y), 0, 0);
+            tex.Apply();
+
+            _UseCamera.targetTexture = null;
+            RenderTexture.active = null;
+
+            File.WriteAllBytes(
+                Path.Combine(path, fileName),
+                tex.EncodeToPNG()
+            );
+
+            Destroy(rt);
+            Destroy(tex);
+
+            _UseCamera.backgroundColor = cacheColor;
 
             if (_consoleLogIsActive)
             {
-                Debug.Log("Title: " + fileName);
-                Debug.Log("Directory: " + path);
+                Debug.Log($"Saved: {fileName}");
+                Debug.Log($"Path: {path}");
             }
 
-            _UseCamera.backgroundColor = CacheColor;
-
+#if UNITY_EDITOR
             UnityEditor.AssetDatabase.Refresh();
-        }
-
-        private void imagePathCheck(string path)
-        {
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-                Debug.Log("CreateFolder: " + path);
-            }
+#endif
         }
 
         private string GetNextFileName(string directory, string baseName, string extension)
         {
-            int maxNumber = 0;
-            string[] files = Directory.GetFiles(directory, baseName + "*" + extension);
-            foreach (string file in files)
+            int max = 0;
+            foreach (var f in Directory.GetFiles(directory, baseName + "*" + extension))
             {
-                string fileName = Path.GetFileNameWithoutExtension(file);
-                // 例: img_001 → 001 部分だけ抽出
-                string numberPart = fileName.Replace(baseName, "").Replace("_", "");
-                if (int.TryParse(numberPart, out int number))
-                {
-                    if (number > maxNumber) maxNumber = number;
-                }
+                string num = Path.GetFileNameWithoutExtension(f)
+                    .Replace(baseName, "")
+                    .Replace("_", "");
+                if (int.TryParse(num, out int n))
+                    max = Mathf.Max(max, n);
             }
-            // 次の番号を作る（3桁ゼロパディング）
-            int nextNumber = maxNumber + 1;
-            return baseName + "_" + nextNumber.ToString("D3") + extension;
+            return $"{baseName}_{(max + 1):D3}{extension}";
         }
 
-        private Vector2Int getScreenSizePixel2Int(SCREEN_SIZE_PIXEL ScreenSize)
+        private Vector2Int GetScreenSizePixel2Int(SCREEN_SIZE_PIXEL type)
         {
-            Vector2Int size = new Vector2Int(1024, 1024);
-            switch (ScreenSize)
+            return type switch
             {
-                case SCREEN_SIZE_PIXEL.p256x256:
-                    size = new Vector2Int(256, 256);
-                    break;
-                case SCREEN_SIZE_PIXEL.p512x512:
-                    size = new Vector2Int(512, 512);
-                    break;
-                case SCREEN_SIZE_PIXEL.p1024x1024:
-                    size = new Vector2Int(1024, 1024);
-                    break;
-                case SCREEN_SIZE_PIXEL.p2048x2048:
-                    size = new Vector2Int(2048, 2048);
-                    break;
-                case SCREEN_SIZE_PIXEL.p4096x4096:
-                    size = new Vector2Int(4096, 4096);
-                    break;
-                case SCREEN_SIZE_PIXEL.p1280x720:
-                    size = new Vector2Int(1280, 720);
-                    break;
-                case SCREEN_SIZE_PIXEL.p1920x1080:
-                    size = new Vector2Int(1920, 1080);
-                    break;
-                case SCREEN_SIZE_PIXEL.p2560x1440:
-                    size = new Vector2Int(2560, 1440);
-                    break;
-                case SCREEN_SIZE_PIXEL.p3840x2160:
-                    size = new Vector2Int(3840, 2160);
-                    break;
-                case SCREEN_SIZE_PIXEL.CustomSize:
-                    if (_customSize.x > 4096) _customSize.x = 4096;
-                    if (_customSize.y > 4096) _customSize.y = 4096;
-                    if (_customSize.x < 32) _customSize.x = 32;
-                    if (_customSize.y < 32) _customSize.y = 32;
-                    size = _customSize;
-                    break;
-            }
-            return size;
+                SCREEN_SIZE_PIXEL.p256x256 => new Vector2Int(256, 256),
+                SCREEN_SIZE_PIXEL.p512x512 => new Vector2Int(512, 512),
+                SCREEN_SIZE_PIXEL.p1024x1024 => new Vector2Int(1024, 1024),
+                SCREEN_SIZE_PIXEL.p2048x2048 => new Vector2Int(2048, 2048),
+                SCREEN_SIZE_PIXEL.p4096x4096 => new Vector2Int(4096, 4096),
+                SCREEN_SIZE_PIXEL.p1280x720 => new Vector2Int(1280, 720),
+                SCREEN_SIZE_PIXEL.p1920x1080 => new Vector2Int(1920, 1080),
+                SCREEN_SIZE_PIXEL.p2560x1440 => new Vector2Int(2560, 1440),
+                SCREEN_SIZE_PIXEL.p3840x2160 => new Vector2Int(3840, 2160),
+                SCREEN_SIZE_PIXEL.CustomSize => _customSize,
+                _ => new Vector2Int(1024, 1024),
+            };
         }
-
-        private string getTimeStamp(TIME_STAMP type)
-        {
-            switch (type)
-            {
-                case TIME_STAMP.MMDDHHMMSS:
-                    return DateTime.Now.ToString("MMddHHmmss");
-                case TIME_STAMP.YYYYMMDDHHMMSS:
-                    return DateTime.Now.ToString("yyyyMMddHHmmss");
-                default:
-                    return DateTime.Now.ToString("yyyyMMddHHmmss");
-            }
-        }
-#endif
     }
 }
