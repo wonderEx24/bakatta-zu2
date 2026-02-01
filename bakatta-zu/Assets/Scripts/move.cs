@@ -11,10 +11,10 @@ public class Move : MonoBehaviour
     private bool isGrounded = false;
 
     // おでんオブジェクトとのインタラクション範囲
-    public Transform oden;  // おでんの位置
-    [Range(0.1f, 10f)] // 0.1から10の範囲で距離を設定できるようにする
-    public float interactDistance = 2f;  // おでんとのインタラクション距離
-    private bool isNearOden = false;  // おでんの近くにいるかどうか
+    public Transform oden;  
+    [Range(0.1f, 10f)]
+    public float interactDistance = 2f;  
+    private bool isNearOden = false;  
 
     // 行動中かどうかを示すフラグ
     private static bool isActioning = false;
@@ -26,26 +26,23 @@ public class Move : MonoBehaviour
 
     void FixedUpdate()
     {
-        // プレイヤーの足元の位置を取得（またはColliderの中心）
         Vector3 playerFeetPosition = transform.position;
 
-        // おでんとの距離を計算
-        float distanceToOden = Vector3.Distance(playerFeetPosition, oden.position);
+        // ★ Nullチェックで安全に
+        float distanceToOden = 0f;
+        if (oden != null)
+            distanceToOden = Vector3.Distance(playerFeetPosition, oden.position);
 
         // おでんとのインタラクション判定
-        if (distanceToOden <= interactDistance && !isActioning) // おでんに近い、かつ行動していない場合
+        if (distanceToOden <= interactDistance && !isActioning)
         {
             isNearOden = true;
-            if (isNearOden)
-            {
-                //Debug.Log("おでんに近い状態です！");
-            }
 
             if (Input.GetKeyDown(KeyCode.E))
             {
-                InteractWithOden();  // おでんとのインタラクション
-                isActioning = true;  // 行動中フラグを立てる
-                StartCoroutine(ResetActionFlag()); // 1秒後にフラグを戻す
+                InteractWithOden();
+                isActioning = true;
+                StartCoroutine(ResetActionFlag());
             }
         }
         else
@@ -53,8 +50,7 @@ public class Move : MonoBehaviour
             isNearOden = false;
         }
 
-
-        // プレイヤーの移動処理
+        // 移動処理
         float movementSpeed = Input.GetKey(KeyCode.LeftShift) ? keyMovementSpeed * 2 : keyMovementSpeed;
 
         if (Input.GetKey(KeyCode.A)) transform.Translate(-movementSpeed, 0.0f, 0.0f);
@@ -62,6 +58,7 @@ public class Move : MonoBehaviour
         if (Input.GetKey(KeyCode.W)) transform.Translate(0.0f, 0.0f, movementSpeed);
         if (Input.GetKey(KeyCode.S)) transform.Translate(0.0f, 0.0f, -movementSpeed);
 
+        // マウス回転
         float mx = Input.GetAxis("Mouse X");
         if (Mathf.Abs(mx) > 0.001f) transform.Rotate(0, mx * mouseSensitivity, 0);
 
@@ -75,11 +72,9 @@ public class Move : MonoBehaviour
 
     void InteractWithOden()
     {
-        // おでんとのインタラクション処理（例えば、ログを出力）
         Debug.Log("おでんに触った！");
     }
 
-    // 地面判定
     private void OnCollisionStay(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
@@ -103,11 +98,9 @@ public class Move : MonoBehaviour
         }
     }
 
-    // 行動フラグを1秒後にリセットするコルーチン
     private IEnumerator ResetActionFlag()
     {
-        yield return new WaitForSeconds(1f);  // 1秒待機
-        isActioning = false;  // フラグをリセット
+        yield return new WaitForSeconds(1f);
+        isActioning = false;
     }
 }
-//player speed 0.12

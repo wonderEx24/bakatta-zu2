@@ -1,53 +1,99 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections;
 
-public class PostUI : MonoBehaviour {
+public class PostUI : MonoBehaviour
+{
+    [Header("UI")]
     public GameObject postUI;
     public GameObject showBtns;
+
     public TMP_InputField userNameInput;
     public TMP_InputField messageInput;
     public Image imagePreview;
+
+    [Header("管理")]
     public PostManager postManager;
     public kakunin shower;
-    private Sprite selectedImage; // 選択した画像
 
-    // 投稿ボタンを押した時
-    public void OnSubmitPost() {
+    [Header("操作制御")]
+    public cameramove cameraMove;
+    public Move playerMove;
+
+    private Sprite selectedImage;
+
+    // =========================
+    // 投稿処理
+    // =========================
+    public void OnSubmitPost()
+    {
         string userName = userNameInput.text;
         string message = messageInput.text;
 
-        if (string.IsNullOrEmpty(message)) {
+        if (string.IsNullOrEmpty(message))
+        {
             Debug.Log("メッセージが空です！");
             return;
         }
 
         postManager.CreatePost(userName, message, selectedImage);
 
-        // 入力欄をクリア
         userNameInput.text = "";
         messageInput.text = "";
-        imagePreview.sprite = null;
-        selectedImage = null;
+        OnSelectImage(null);
     }
 
-    // 仮：画像選択（スクショやリソースから選ぶ処理を後で追加）
-    public void OnSelectImage(Sprite sprite) {
+    public void OnSelectImage(Sprite sprite)
+    {
         selectedImage = sprite;
         imagePreview.sprite = sprite;
     }
-    // 投稿画面を表示する(更新もここで行う)
+
+    // =========================
+    // UI表示
+    // =========================
     public void ShowPostUI()
     {
         postUI.SetActive(true);
+        showBtns.SetActive(false);
+
         OnSelectImage(null);
         shower.showAllPicture();
-        showBtns.SetActive(false);
+
+        DisableControl();
     }
-    // 投稿画面を隠す
+
     public void HidePostUI()
     {
-        showBtns.SetActive(true);
         postUI.SetActive(false);
+        showBtns.SetActive(true);
+
+        StartCoroutine(EnableControlNextFrame());
+    }
+
+    // =========================
+    // 操作制御
+    // =========================
+    private void DisableControl()
+    {
+        if (cameraMove != null) cameraMove.enabled = false;
+        if (playerMove != null) playerMove.enabled = false;
+
+        CursorManager.Instance.LockForUI();
+    }
+
+    private void EnableControl()
+    {
+        if (cameraMove != null) cameraMove.enabled = true;
+        if (playerMove != null) playerMove.enabled = true;
+
+        CursorManager.Instance.Restore();
+    }
+
+    private IEnumerator EnableControlNextFrame()
+    {
+        yield return null;
+        EnableControl();
     }
 }
