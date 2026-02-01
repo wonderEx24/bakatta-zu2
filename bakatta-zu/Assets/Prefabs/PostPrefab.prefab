@@ -67,8 +67,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Create at: 2025/10/31 11:11'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: dec3fcdfa9dc14be390c811f7516b15d, type: 2}
+  m_sharedMaterial: {fileID: 7025256066215051612, guid: dec3fcdfa9dc14be390c811f7516b15d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -405,12 +405,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'User Name
-
-'
+  m_text: "\u7530\u6240\u6D69\u4E8C"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: dec3fcdfa9dc14be390c811f7516b15d, type: 2}
+  m_sharedMaterial: {fileID: 7025256066215051612, guid: dec3fcdfa9dc14be390c811f7516b15d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -541,10 +539,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: This is a test. is This a test?
+  m_text: "\u8FEB\u771F\u7A7A\u624B\u90E8"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: dec3fcdfa9dc14be390c811f7516b15d, type: 2}
+  m_sharedMaterial: {fileID: 7025256066215051612, guid: dec3fcdfa9dc14be390c811f7516b15d, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
