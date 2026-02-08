@@ -10366,8 +10366,8 @@ MonoBehaviour:
   showBtns: {fileID: 546768910}
   contentParent: {fileID: 385812843}
   postPrefab: {fileID: 5100257022486317826, guid: 6d29a3d97af941c4cb314bd4afb4959c, type: 3}
-  cameraMove: {fileID: 0}
-  playerMove: {fileID: 0}
+  cameraMove: {fileID: 528334245}
+  playerMove: {fileID: 924128888}
 --- !u!1 &165100360 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -8825368021873090185, guid: 4d77a563a9e0e88459085dabed1db73a, type: 3}
@@ -26817,6 +26817,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6248781238466408817, guid: 461d27f5c2cf54b929ec8bffc9053333, type: 3}
+      propertyPath: jumpPower
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -30802,6 +30806,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1295837055026598097, guid: 4d77a563a9e0e88459085dabed1db73a, type: 3}
+--- !u!114 &528334245 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5213140032863061124, guid: 461d27f5c2cf54b929ec8bffc9053333, type: 3}
+  m_PrefabInstance: {fileID: 452704652}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96f07a51a991c418199a42a99ee5b270, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &528346181 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 455137238450204089, guid: c140827ccdffaaa459b0630075358348, type: 3}
@@ -55030,6 +55045,17 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1454877602981136268, guid: e125baf14cf50384b8645810110960c9, type: 3}
+--- !u!114 &924128888 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6248781238466408817, guid: 461d27f5c2cf54b929ec8bffc9053333, type: 3}
+  m_PrefabInstance: {fileID: 452704652}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 19b496b314898471c9b290724daabacd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &924528783 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1397389346101406560, guid: fe4266b75c863b44e9e377792872571a, type: 3}
@@ -76938,8 +76964,8 @@ MonoBehaviour:
   imagePreview: {fileID: 287986972}
   postManager: {fileID: 164897700}
   shower: {fileID: 1255578141}
-  cameraMove: {fileID: 0}
-  playerMove: {fileID: 0}
+  cameraMove: {fileID: 528334245}
+  playerMove: {fileID: 924128888}
 --- !u!1 &1255674464 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -7020638496299237353, guid: 4d77a563a9e0e88459085dabed1db73a, type: 3}
