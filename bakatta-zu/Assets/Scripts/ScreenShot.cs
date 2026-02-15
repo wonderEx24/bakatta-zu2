@@ -68,6 +68,18 @@ namespace ScreenshotUtility
                 return;
             }
 
+            //スコア計算
+            if(_photoScoreCalculator != null)
+            {
+                int score = _photoScoreCalculator.CalculateScore();
+                ScoreManager.Instance.AddScore(score);
+                Debug.Log("写真スコア: " + score);
+            }
+            else
+            {
+                Debug.LogWarning("PhotoScoreCalculator が設定されていません");
+            }
+
             string path = Path.Combine(
                 Application.persistentDataPath,
                 _screenShotFolderName
@@ -75,19 +87,6 @@ namespace ScreenshotUtility
 
             StartCoroutine(ImageShooting(path, _screenShotsTitle));
         }
-        
-        [ContextMenu("スクリーンショットを撮影する")]
-public void getScreenShots()
-{
-    if (NullCheck()) { return; }
-
-    // 📸 スコア計算（シャッターと同時）
-    int score = _photoScoreCalculator.CalculateScore();
-    Debug.Log("写真スコア: " + score);
-
-    string path = Application.dataPath + "/Resources/" + _screenShotFolderName + "/";
-    StartCoroutine(imageShooting(path, _screenShotsTitle));
-}
 
         private IEnumerator ImageShooting(string path, string title)
         {
