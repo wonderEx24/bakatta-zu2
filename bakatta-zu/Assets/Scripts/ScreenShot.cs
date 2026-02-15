@@ -45,6 +45,8 @@ namespace ScreenshotUtility
         [SerializeField] string _screenShotFolderName = "ScreenShots";
         public KeyCode _screenShotsKeybinding = KeyCode.F1;
         [SerializeField] bool _consoleLogIsActive = true;
+        [SerializeField] PhotoScoreCalculator _photoScoreCalculator;
+
 
         void Update()
         {
@@ -76,13 +78,19 @@ namespace ScreenshotUtility
         }
 
         [ContextMenu("スクリーンショットを撮影する")]
-        public void getScreenShots()
-        {
-            if (NullCheck()) { return; }
+public void getScreenShots()
+{
+    if (NullCheck()) { return; }
 
-            string path = Application.dataPath + "/Resources/" + _screenShotFolderName + "/";
-            StartCoroutine(imageShooting(path, _screenShotsTitle));
-        }
+    // 📸 スコア計算（シャッターと同時）
+    int score = _photoScoreCalculator.CalculateScore();
+    Debug.Log("写真スコア: " + score);
+
+    string path = Application.dataPath + "/Resources/" + _screenShotFolderName + "/";
+    StartCoroutine(imageShooting(path, _screenShotsTitle));
+}
+
+        
 
         private IEnumerator imageShooting(string path, string title)
         {
